@@ -16,6 +16,7 @@ namespace ArraysInClass
             static List<string> weaponType;
             static int health;
             static int[] lightAmmoTotal;
+            static int fireIndex;
         static void Main()
         {
             StartUp();
@@ -23,10 +24,18 @@ namespace ArraysInClass
             Console.WriteLine("-------------------");
             Console.WriteLine("A text shooter game");
             Console.WriteLine("\n");//Gameplay is going between line breaks
+            ChoseWeapon();
             ShowHUD();
-            FireLoop();
+            FireLoop(3);
+            FireLoop(5);
+            FireLoop(7);
+            FireLoop(1);
+            FireLoop(5);
+            FireLoop(5);
             ShowHUD();
             LightAmmoPickup(50);
+            ShowHUD();
+            Reload();
             ShowHUD();
 
             Console.WriteLine("\n");
@@ -102,15 +111,20 @@ namespace ArraysInClass
         }
         static void Reload()
         {
-            if(maxLightAmmo[curWeaponIndex] <= lightAmmoTotal[0])
+            if(maxLightAmmo[curWeaponIndex] <= lightAmmoTotal[0] && lightAmmo[curWeaponIndex] != maxLightAmmo[curWeaponIndex])
             {
                 Console.WriteLine("Reloading weapon");
                 lightAmmo[curWeaponIndex] = maxLightAmmo[curWeaponIndex];
                 lightAmmoTotal[0] -= maxLightAmmo[curWeaponIndex];
             }
-            else
+            if(lightAmmo[curWeaponIndex] == maxLightAmmo[curWeaponIndex])
             {
                 Console.WriteLine("You dont need to reload");
+                return;
+            }
+            if(maxLightAmmo[curWeaponIndex] > lightAmmoTotal[0])
+            {
+                Console.WriteLine("You dont have enough ammo to reload");
                 return;
             }
         }
@@ -122,9 +136,9 @@ namespace ArraysInClass
                 return;
             }
             Console.WriteLine(string.Format("You picked up {0} ammo", ammo));
-            if(lightAmmoTotal[0] > lightAmmoTotal[1])
+            if(lightAmmoTotal[0] < lightAmmoTotal[1])
             {
-                lightAmmoTotal[0] += ammo;
+                lightAmmoTotal[0] = lightAmmoTotal[0] + ammo;
                 if(lightAmmoTotal[0] > lightAmmoTotal[1])
                 {
                     lightAmmoTotal[0] = lightAmmoTotal[1];
@@ -136,11 +150,40 @@ namespace ArraysInClass
                 Reload();
             }
         }
-        static void FireLoop()
+        static void FireLoop(int shots)
         {
-            while(lightAmmo[curWeaponIndex] > 0)
+            fireIndex = 0;
+            if(shots >= 6 || shots <= 0)
+            {
+                Console.WriteLine("Shots outside of range for function");
+                return;
+            }
+            while(fireIndex < shots)
             {
                 Fire();
+                fireIndex += 1;
+            }
+        }
+        static void ChoseWeapon()
+        {
+            Console.WriteLine("Pick your weapon, 1 for a pistol, 2 for and SMG, 3 for a Light DMR");
+            ConsoleKeyInfo result = Console.ReadKey();
+            if(result.key == Console.Key.1)
+            {
+                curWeaponIndex = 0;
+            }
+            if(result.key == "2")
+            {
+                curWeaponIndex = 1;
+            }
+            if(result.key == "3")
+            {
+                curWeaponIndex = 2;
+            } 
+            if(result.key != "1" || result.key != "2" || result.key != "3")
+            {
+                Console.WriteLine("Please pick a weapon correctly");
+                ChoseWeapon();
             }
         }
     }
